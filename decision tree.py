@@ -1,5 +1,3 @@
-# https://github.com/Erikfather/Decision_tree-python/blob/master/tree.py
-# https://zhuanlan.zhihu.com/p/65304798
 import numpy as np
 import data_process
 from sklearn.model_selection import KFold
@@ -17,11 +15,7 @@ class dcs_tree(object):
         feature = np.array(ftr)
         target = np.array(tgt)
         ftr_indices = set(range(0, feature.shape[-1]))
-        #pos = np.where(feature!=-1)
-        # processing missing values
-        #pos_mis_values = np.where(feature == -1)
-        #line_values = list(set([item for item in pos[0]]))
-        #line_mis_values = list(set([item for item in pos_mis_values[0]]))
+        
         self.weights = np.ones(feature.shape[0])#{line:1 for line in line_mis_values}
 
         self.dcs_tree = self.induct_tree(feature, target, ftr_indices, self.weights)
@@ -40,31 +34,7 @@ class dcs_tree(object):
             final_p = {0:0,1:0} #TODO
             #final_p = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
             final_p = dcs_tree.search_tree(record,tree,idx_ftr,p,final_p)
-            #print("final_p",final_p)
-            '''while True:
-                ftr_val = record[idx_ftr]
-                if ftr_val == -1:
-                    val_list = list(tree["tree"][str(idx_ftr)])
-                    for val in val_list:
-                        count_list = list()
-                        p_list = list()
-                        count_total = 0
-                        if type(tree["tree"][str(idx_ftr)][val]).__name__ == 'dict':
-                            tree = tree["tree"][str(idx_ftr)][val]
-                            count = tree["count"][str(idx_ftr)][val]
-                            count_list.append(count*1.0)
-                        for i in count_list:
-                            count_total += i
-                        p_list = [i/count_total for i in count_list]
-
-                if type(tree["tree"][str(idx_ftr)][ftr_val]).__name__ == 'dict':
-                    tree = tree["tree"][str(idx_ftr)][ftr_val]
-                    idx_ftr = list(tree["tree"].keys())[0]
-                    idx_ftr = int(idx_ftr)
-                else:
-
-                    labels.append(tree[str(idx_ftr)][ftr_val])
-                    break'''
+            
             label = max(final_p,key = final_p.get)
             labels.append(label)
         return labels
@@ -227,10 +197,6 @@ class dcs_tree(object):
                     p_dict[tgt] = 1.0 * c / total_c*p
                     final_p[tgt] += p_dict[tgt]
                 return final_p
-
-
-
-
 
 
 if __name__ == '__main__':
