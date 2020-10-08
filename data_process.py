@@ -28,7 +28,7 @@ native_country = {'United-States':0, 'Cambodia':1, 'England':2, 'Puerto-Rico':3,
                   'Laos':25, 'Ecuador':26, 'Taiwan':27, 'Haiti':28, 'Columbia':29, 'Hungary':30,
                   'Guatemala':31, 'Nicaragua':32, 'Scotland':33, 'Thailand':34, 'Yugoslavia':35,
                   'El-Salvador':36, 'Trinadad&Tobago':37, 'Peru':38, 'Hong':39, 'Holand-Netherlands':40}
-target = {'>50K':0,'<=50K':1}
+target = {'>50K':0,'<=50K':1, '<=50K.':1,'>50K.':0}
 
 labelname = {0:'age',1:workclass,2:'fnlwgt',3:education,
              4:'education-num',5:marital_status,6:occupation,
@@ -38,6 +38,7 @@ categorical_list = [1,3,5,6,7,8,9,13,14]
 continous_list = [0,2,4,10,11,12]
 
 filename = 'adult.data'
+filename_test = 'adult.test'
 
 
 def read_data(f_name)->list:

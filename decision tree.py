@@ -1,3 +1,5 @@
+# https://github.com/Erikfather/Decision_tree-python/blob/master/tree.py
+# https://zhuanlan.zhihu.com/p/65304798
 import numpy as np
 import data_process
 from sklearn.model_selection import KFold
@@ -15,7 +17,11 @@ class dcs_tree(object):
         feature = np.array(ftr)
         target = np.array(tgt)
         ftr_indices = set(range(0, feature.shape[-1]))
-        
+        #pos = np.where(feature!=-1)
+        # processing missing values
+        #pos_mis_values = np.where(feature == -1)
+        #line_values = list(set([item for item in pos[0]]))
+        #line_mis_values = list(set([item for item in pos_mis_values[0]]))
         self.weights = np.ones(feature.shape[0])#{line:1 for line in line_mis_values}
 
         self.dcs_tree = self.induct_tree(feature, target, ftr_indices, self.weights)
@@ -34,7 +40,31 @@ class dcs_tree(object):
             final_p = {0:0,1:0} #TODO
             #final_p = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0}
             final_p = dcs_tree.search_tree(record,tree,idx_ftr,p,final_p)
-            
+            #print("final_p",final_p)
+            '''while True:
+                ftr_val = record[idx_ftr]
+                if ftr_val == -1:
+                    val_list = list(tree["tree"][str(idx_ftr)])
+                    for val in val_list:
+                        count_list = list()
+                        p_list = list()
+                        count_total = 0
+                        if type(tree["tree"][str(idx_ftr)][val]).__name__ == 'dict':
+                            tree = tree["tree"][str(idx_ftr)][val]
+                            count = tree["count"][str(idx_ftr)][val]
+                            count_list.append(count*1.0)
+                        for i in count_list:
+                            count_total += i
+                        p_list = [i/count_total for i in count_list]
+
+                if type(tree["tree"][str(idx_ftr)][ftr_val]).__name__ == 'dict':
+                    tree = tree["tree"][str(idx_ftr)][ftr_val]
+                    idx_ftr = list(tree["tree"].keys())[0]
+                    idx_ftr = int(idx_ftr)
+                else:
+
+                    labels.append(tree[str(idx_ftr)][ftr_val])
+                    break'''
             label = max(final_p,key = final_p.get)
             labels.append(label)
         return labels
@@ -199,6 +229,10 @@ class dcs_tree(object):
                 return final_p
 
 
+
+
+
+
 if __name__ == '__main__':
     #data = np.random.randint(0,5, size=(10,5))
     #print(data)
@@ -213,6 +247,8 @@ if __name__ == '__main__':
     start_d = time.time()
     data = data_process.read_data(data_process.filename)
     data = data_process.preprocess(data)
+    data_tt = data_process.read_data(data_process.filename_test)
+    data_tt = data_process.preprocess(data_tt)
     end_d = time.time()
     print("time for data processing:", end_d-start_d)
     model = dcs_tree()
@@ -223,6 +259,10 @@ if __name__ == '__main__':
     prcs_list = []
     r_list = []
     f1_list = []
+    acc_list_t = []
+    prcs_list_t = []
+    r_list_t = []
+    f1_list_t = []
     for train_idx, test_idx in kf.split(data):
         f_tr, f_tt = data[:,:-1][train_idx], data[:,:-1][test_idx]
         label_tr, label_tt = data[:,-1][train_idx], data[:,-1][test_idx]
@@ -245,6 +285,23 @@ if __name__ == '__main__':
         r_list.append(recall)
         f1_list.append(f1)
 
+        # print("time for training:", end - start)
+        start_tp = time.time()
+        labels_t = model.classify(data_tt[:,:-1])
+        end_tp = time.time()
+        print("time for test set predicting:", end_tp - start_tp)
+
+        acc_t = accuracy_score(data_tt[:,-1], labels_t)
+        prcs_t = precision_score(data_tt[:,-1], labels_t)
+        recall_t = recall_score(data_tt[:,-1], labels_t)
+        f1_t = f1_score(data_tt[:,-1], labels_t)
+        acc_list_t.append(acc_t)
+        prcs_list_t.append(prcs_t)
+        r_list_t.append(recall_t)
+        f1_list_t.append(f1_t)
+
+
+
     print("accuracy:", acc_list)
     print("recall:", r_list)
     print("precision:", prcs_list)
@@ -253,6 +310,15 @@ if __name__ == '__main__':
     print("average_r:", 1.0*sum(r_list)/k)
     print("average_p:", 1.0*sum(prcs_list)/k)
     print("average_f1:", 1.0*sum(f1_list)/k)
+
+    print("accuracy:", acc_list_t)
+    print("recall:", r_list_t)
+    print("precision:", prcs_list_t)
+    print("f1:", f1_list_t)
+    print("average_a:", 1.0 * sum(acc_list_t) / k)
+    print("average_r:", 1.0 * sum(r_list_t) / k)
+    print("average_p:", 1.0 * sum(prcs_list_t) / k)
+    print("average_f1:", 1.0 * sum(f1_list_t) / k)
 
 
 
